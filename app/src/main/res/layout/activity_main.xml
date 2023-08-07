@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:layout_centerVertical="true"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reconnect" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="215dp"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Status: Not connected"
+        android:textColor="#C8BABA"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="316dp"
+        android:paddingHorizontal="50dp"
+        android:layout_marginTop="50dp">
+
+        <ImageButton
+            android:id="@+id/upBtn"
+            android:layout_marginTop="20dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:contentDescription="UP"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/_86407_arrow_up_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/leftBtn"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="LEFT"
+            app:srcCompat="@drawable/_86410_arrow_left_previous_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/rightBtn"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="RIGHT"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@id/leftBtn"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/_86409_arrow_right_next_icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/down"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="DOWN"
+            app:srcCompat="@drawable/_86411_arrow_down_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rightBtn" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:layout_gravity="center"
+        android:id="@+id/stop"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="Stop" />
+</LinearLayout>
