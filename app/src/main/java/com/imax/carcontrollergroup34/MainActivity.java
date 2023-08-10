@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     public static Handler handler;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (bluetoothSocket != null) {
@@ -81,10 +80,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Request Bluetooth permission if not granted
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN}, PERMISSION_REQUEST_CODE);
-        }
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_CONNECT,  Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH_SCAN}, PERMISSION_REQUEST_CODE);
+
         findViewById(R.id.btnConnect).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -151,14 +149,14 @@ public class MainActivity extends AppCompatActivity {
         // Check if Bluetooth is enabled, and if not, request to enable it
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
                 // Permission is not granted
                 // Request permission
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.BLUETOOTH_CONNECT},
-                            REQUEST_ENABLE_BLUETOOTH);
-                }
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.BLUETOOTH},
+                        REQUEST_ENABLE_BLUETOOTH);
+//                }
                 return;
             }
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
@@ -170,26 +168,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void connectToBluetoothDevice() {
         // Get a set of bonded (paired) devices
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                // Permission is not granted
-                // Request permission
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.BLUETOOTH_CONNECT},
-                            REQUEST_ENABLE_BLUETOOTH);
-                }
-//                return;
-            }
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             // Loop through the paired devices to find the HC-05 module
+            boolean isFound = false;
             for (BluetoothDevice device : pairedDevices) {
                 if (device.getName().equals("HC-05")) {
+                    isFound = true;
                     try {
                         // Create a BluetoothSocket for the device using the UUID
                         if(bluetoothSocket != null){
@@ -214,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                             isConnected = true;
                             Toast.makeText(this, "Connected to HC-05", Toast.LENGTH_SHORT).show();
                             TextView status = (TextView) findViewById(R.id.tvStatus);
-                            status.setText("Connected");
+                            status.setText("Status: Connected");
                             status.setTextColor(getResources().getColor(R.color.green));
 
 
@@ -223,12 +219,23 @@ public class MainActivity extends AppCompatActivity {
                         // Perform read and write operations with the BluetoothSocket
 
                     } catch (IOException e) {
+                        Toast.makeText(this, "Connecting error", Toast.LENGTH_SHORT).show();
+                        TextView status = (TextView) findViewById(R.id.tvStatus);
+                        status.setText("Status: Connecting error");
+                        status.setTextColor(getResources().getColor(R.color.purple_200));
                         Log.e(TAG, "Error occurred while connecting to HC-05: " + e.getMessage());
                         Toast.makeText(this, "Error occurred while connecting to HC-05: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                     break;
                 }
             }
+            if(!isFound){
+                Toast.makeText(this, "HC-05 not found", Toast.LENGTH_SHORT).show();
+                TextView status = (TextView) findViewById(R.id.tvStatus);
+                status.setText("Status: HC-05 not found");
+                status.setTextColor(getResources().getColor(R.color.purple_200));
+            }
+
         }
     }
 
@@ -253,8 +260,13 @@ public class MainActivity extends AppCompatActivity {
                 outputStream.write(data.toString().getBytes());
                 outputStream.flush();
             } catch (IOException e) {
+                Toast.makeText(this, "Control failed", Toast.LENGTH_SHORT).show();
+                TextView status = (TextView) findViewById(R.id.tvStatus);
+                status.setText("Status: Control failed");
                 e.printStackTrace();
             }
+        }else{
+            Toast.makeText(this, "No socket connection", Toast.LENGTH_SHORT).show();
         }
     }
 
